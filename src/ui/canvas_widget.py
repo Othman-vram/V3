@@ -231,7 +231,10 @@ class CanvasWidget(QWidget):
         if not enabled:
             self.is_rectangle_selecting = False
             self.selection_rect = QRect()
+            # Clear any visual selection rectangle
             self.update()
+            # Optionally clear group selection when disabling rectangle mode
+            # (This will be handled by the main window)
             
     def schedule_render(self, fast: bool = False):
         """Schedule fragment rendering"""

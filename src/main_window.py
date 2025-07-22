@@ -145,6 +145,10 @@ class MainWindow(QMainWindow):
         """Handle group selection from canvas"""
         self.fragment_manager.set_group_selection(fragment_ids)
         
+        # Auto-disable rectangle selection mode after making a selection
+        if self.rectangle_select_action.isChecked():
+            self.rectangle_select_action.setChecked(False)
+        
     def setup_menu_bar(self):
         """Setup the menu bar"""
         menubar = self.menuBar()
@@ -184,6 +188,7 @@ class MainWindow(QMainWindow):
         rectangle_select_action.setShortcut(QKeySequence('Ctrl+Shift+R'))
         rectangle_select_action.setCheckable(True)
         rectangle_select_action.toggled.connect(self.toggle_rectangle_selection)
+        self.rectangle_select_action = rectangle_select_action  # Store reference
         edit_menu.addAction(rectangle_select_action)
         
         edit_menu.addSeparator()
@@ -228,6 +233,8 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage("Rectangle selection mode enabled - drag to select multiple fragments")
         else:
             self.status_bar.showMessage("Rectangle selection mode disabled")
+            # Clear any existing group selection when disabling rectangle mode
+            self.fragment_manager.clear_selection()
         
     def setup_status_bar(self):
         """Setup the status bar"""

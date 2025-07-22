@@ -242,34 +242,33 @@ class ControlPanel(QWidget):
             self.size_label.setText("Size: Multiple")
             self.file_label.setText("File: Multiple")
             
-            # For groups: ENABLE 90° rotation and arrows, DISABLE only 45°/free rotation/flip
+            # For groups: ENABLE 90° rotation buttons and arrow movement
+            self.rotate_cw_btn.setEnabled(True)
+            self.rotate_ccw_btn.setEnabled(True)
+            
+            # DISABLE precise angle control and 45° buttons for groups
             self.angle_spinbox.setEnabled(False)
             self.angle_45_btn.setEnabled(False)
             self.angle_neg45_btn.setEnabled(False)
             
-            # ENABLE 90° rotation buttons for groups
-            self.rotate_cw_btn.setEnabled(True)
-            self.rotate_ccw_btn.setEnabled(True)
-            
-            # ENABLE arrow movement buttons for groups (disable only precise X/Y spinboxes)
+            # DISABLE precise position spinboxes for groups
             self.x_spinbox.setEnabled(False)
             self.y_spinbox.setEnabled(False)
-            # Arrow buttons are in translation_layout - they stay enabled by default
             
             # DISABLE flip controls for groups
             self.flip_h_btn.setEnabled(False)
             self.flip_v_btn.setEnabled(False)
             
-            # ENABLE visibility and opacity for groups
-            self.visible_checkbox.setEnabled(True)
-            self.opacity_slider.setEnabled(True)
-            
-            # ENABLE arrow buttons for groups
+            # ENABLE arrow movement buttons for groups
             self.up_btn.setEnabled(True)
             self.down_btn.setEnabled(True)
             self.left_btn.setEnabled(True)
             self.right_btn.setEnabled(True)
             self.center_btn.setEnabled(True)
+            
+            # DISABLE visibility and opacity for groups (these are per-fragment properties)
+            self.visible_checkbox.setEnabled(False)
+            self.opacity_slider.setEnabled(False)
             
         elif has_fragment and not self.is_group_selected:
             # Single fragment selection - enable everything
@@ -283,8 +282,6 @@ class ControlPanel(QWidget):
             self.rotate_ccw_btn.setEnabled(True)
             self.flip_h_btn.setEnabled(True)
             self.flip_v_btn.setEnabled(True)
-            self.visible_checkbox.setEnabled(False)
-            self.opacity_slider.setEnabled(False)
             self.x_spinbox.setEnabled(True)
             self.y_spinbox.setEnabled(True)
             
@@ -293,18 +290,8 @@ class ControlPanel(QWidget):
             self.size_label.setText(f"Size: {fragment.original_size[0]} × {fragment.original_size[1]}")
             self.file_label.setText(f"File: {fragment.file_path}")
             
-            # Enable all controls for single fragments
-            self.angle_spinbox.setEnabled(True)
-            self.angle_45_btn.setEnabled(True)
-            self.angle_neg45_btn.setEnabled(True)
-            self.rotate_cw_btn.setEnabled(True)
-            self.rotate_ccw_btn.setEnabled(True)
-            self.flip_h_btn.setEnabled(True)
-            self.flip_v_btn.setEnabled(True)
             self.visible_checkbox.setEnabled(True)
             self.opacity_slider.setEnabled(True)
-            self.x_spinbox.setEnabled(True)
-            self.y_spinbox.setEnabled(True)
             
             # Update position controls (block signals to prevent recursion)
             self.x_spinbox.blockSignals(True)
@@ -360,9 +347,15 @@ class ControlPanel(QWidget):
         """Request a transformation for the current fragment"""
         if self.is_group_selected:
             # Handle group transformations
-            if transform_type in ['rotate_cw', 'rotate_ccw', 'translate']:
+            if transform_type in ['rotate_cw', 'rotate_ccw']:
                 # Group rotation is allowed
                 self.transform_requested.emit('group', transform_type, self.selected_fragment_ids)
+            elif transform_type == 'translate':
+                # Group translation - emit for each fragment in the group
+                dx, dy = value
+                for fragment_id in self.selected_fragment_ids:
+                    self.transform_requested.emit(fragment_id, transform_type, value)
+            # Other transforms are disabled for groups, so they won't reach here
         elif self.current_fragment:
             # Handle single fragment transformations
             self.transform_requested.emit(self.current_fragment.id, transform_type, value)
