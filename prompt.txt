@@ -1,0 +1,54 @@
+I am building a PyQt6 application to manipulate “tissue fragments” on a canvas. I need you to implement a group selection and transformation tool. Follow the instructions strictly to avoid UI clutter or bugs.
+
+✅ Features to Implement:
+1. Group Selection via Rectangle Tool
+Add a tool that allows users to click and drag a rectangle to select multiple fragments on the canvas.
+
+Any fragment intersecting or inside the rectangle should become part of the group selection.
+
+Do not add any new buttons or widgets — this tool must be accessed only through a new option in the Menu Bar (e.g., under a "Tools" or "Edit" menu).
+
+Use the existing selection logic and tools already in the application.
+
+2. Group Movement (Preserve Relative Positions)
+When any selected fragment is dragged, the entire group should move together.
+
+The relative positions of all fragments in the group must stay exactly the same during the move.
+
+3. Group Rotation (90° only, around group center)
+When multiple fragments are selected, the following must apply:
+
+Only 90° clockwise (↻) and 90° counterclockwise (↺) rotation buttons should be enabled.
+
+Disable 45° and free/custom rotation options while a group is selected.
+
+Compute the geometric center (centroid) of the group.
+
+Rotate all fragments as one rigid unit around that center, preserving their layout and spacing.
+
+❗Important Constraints:
+Do NOT add any new buttons, dock widgets, sliders, or controls to the UI.
+
+Only use the Menu Bar to add the new selection tool option.
+
+The selection and rotation behavior for groups must reuse existing UI/controls already present in the app.
+
+Group transformations must be implemented carefully to avoid misalignment or drift between fragments.
+
+💡 Example Clarification:
+If I select 3 fragments forming a triangle and rotate them 90°, the entire triangle shape should rotate, maintaining the exact spacing and arrangement — not rotating fragments independently.
+
+Auto-zoom: After selecting a group with the rectangle tool, automatically zoom to fit all selected fragments in view.
+
+Real-time updates: Make sure all changes show immediately without needing to click anywhere.
+
+Use existing transform buttons: The same rotation buttons in the control panel should work for both single fragments and groups.
+
+Key Point:
+Group rotation = rotate the entire group as if it's one solid object around the group's center point. The fragments should move to new positions while maintaining their relative arrangement.
+
+Don't break any existing functionality and don't clutter the UI with extra widgets.
+
+
+
+Fix the UI update bug - Right now when I use arrow buttons, delete fragments, or change opacity, nothing happens on screen until I click somewhere. Make all changes show up immediately.
